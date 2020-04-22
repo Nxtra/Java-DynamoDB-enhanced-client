@@ -13,6 +13,8 @@ Resources:
           /memory-cards:
             post:
               responses: {}
+            get:
+              responses: {}
       FailOnWarnings: true
       CorsConfiguration:
         AllowOrigins:
@@ -87,6 +89,31 @@ Resources:
             ProjectionType: ALL
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-Function
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: Function
+      CodeUri: src/Function
+      Handler: Handler::handler
+      Runtime: java11
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+      Events:
+        HttpApiGETmemorycards:
+          Type: HttpApi
+          Properties:
+            Path: /memory-cards
+            Method: GET
+            ApiId: !Ref HttpApi
+            PayloadFormatVersion: '2.0'
+            TimeoutInMillis: 29000
+      ReservedConcurrentExecutions: 1
 Parameters:
   StackTagName:
     Type: String
