@@ -18,12 +18,16 @@ Resources:
           /memory-cards/{uuid}:
             get:
               responses: {}
+            delete:
+              responses: {}
           /memory-cards/{author}/{category}:
             get:
               responses: {}
       FailOnWarnings: true
       CorsConfiguration:
         AllowMethods:
+          - '*'
+        AllowOrigins:
           - '*'
   CreateNewMemoryCardApiFunction:
     Type: AWS::Serverless::Function
@@ -188,6 +192,39 @@ Resources:
         Variables:
           TABLE_NAME: !Ref MemoryCardsTable
           TABLE_ARN: !GetAtt MemoryCardsTable.Arn
+          REGION: eu-west-1
+  DeleteMemoryCardByUuidFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-DeleteMemoryCardByUuidF
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: DeleteMemoryCardByUuidFunction
+      CodeUri: src/MemoryCardFunctions
+      Handler: io.theclouddeveloper.memorycards.MemoryCardsHandler::handleDeleteMemoryCardByUuid
+      Runtime: java11
+      MemorySize: 1024
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MemoryCardsTable
+      ReservedConcurrentExecutions: 1
+      Events:
+        HttpApiDELETEmemorycardsuuid:
+          Type: HttpApi
+          Properties:
+            Path: /memory-cards/{uuid}
+            Method: DELETE
+            ApiId: !Ref HttpApi
+            PayloadFormatVersion: '2.0'
+            TimeoutInMillis: 29000
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref MemoryCardsTable
+          TABLE_ARN: !GetAtt MemoryCardsTable.Arn
+          REGION: eu-west-1
 Parameters:
   StackTagName:
     Type: String
