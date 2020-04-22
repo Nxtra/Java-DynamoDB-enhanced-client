@@ -18,10 +18,11 @@ Resources:
           /memory-cards/{uuid}:
             get:
               responses: {}
+          /memory-cards/{author}/{category}:
+            get:
+              responses: {}
       FailOnWarnings: true
       CorsConfiguration:
-        AllowOrigins:
-          - '*'
         AllowMethods:
           - '*'
   CreateNewMemoryCardApiFunction:
@@ -55,13 +56,14 @@ Resources:
         Variables:
           TABLE_NAME: !Ref MemoryCardsTable
           TABLE_ARN: !GetAtt MemoryCardsTable.Arn
+          REGION: eu-west-1
   GetAllMemoryCardsFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub ${AWS::StackName}-GetAllMemoryCardsFunction
       Description: !Sub
         - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
-        - ResourceName: Function
+        - ResourceName: GetAllMemoryCardsFunction
       CodeUri: src/MemoryCardFunctions
       Handler: io.theclouddeveloper.memorycards.MemoryCardsHandler::handleGetAllNewMemoryCardsRequest
       Runtime: java11
@@ -123,21 +125,69 @@ Resources:
             ProjectionType: ALL
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
-  Function:
+  GetMemoryCardByUuidFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${AWS::StackName}-Function
+      FunctionName: !Sub ${AWS::StackName}-GetMemoryCardByUuidFunc
       Description: !Sub
         - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
-        - ResourceName: Function
-      CodeUri: src/Function
-      Handler: index.handler
-      Runtime: nodejs12.x
-      MemorySize: 3008
+        - ResourceName: GetMemoryCardByUuidFunction
+      CodeUri: src/MemoryCardFunctions
+      Handler: io.theclouddeveloper.memorycards.MemoryCardsHandler::handleGetMemoryCardByUuidRequest
+      Runtime: java11
+      MemorySize: 1024
       Timeout: 30
       Tracing: Active
       Policies:
         - AWSXrayWriteOnlyAccess
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MemoryCardsTable
+      ReservedConcurrentExecutions: 1
+      Events:
+        HttpApiGETmemorycardsuuid:
+          Type: HttpApi
+          Properties:
+            Path: /memory-cards/{uuid}
+            Method: GET
+            ApiId: !Ref HttpApi
+            PayloadFormatVersion: '2.0'
+            TimeoutInMillis: 29000
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref MemoryCardsTable
+          TABLE_ARN: !GetAtt MemoryCardsTable.Arn
+          REGION: eu-west-1
+  GetMemoryCardsByAuthorWithCategoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GetMemoryCardsByAuthorW
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: GetMemoryCardsByAuthorWithCategoryFunction
+      CodeUri: src/MemoryCardFunctions
+      Handler: io.theclouddeveloper.memorycards.MemoryCardsHandler::handleGetAllFromAuthorWithCategory
+      Runtime: java11
+      MemorySize: 1024
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MemoryCardsTable
+      ReservedConcurrentExecutions: 1
+      Events:
+        HttpApiGETmemorycardsauthorcategory:
+          Type: HttpApi
+          Properties:
+            Path: /memory-cards/{author}/{category}
+            Method: GET
+            ApiId: !Ref HttpApi
+            PayloadFormatVersion: '2.0'
+            TimeoutInMillis: 29000
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref MemoryCardsTable
+          TABLE_ARN: !GetAtt MemoryCardsTable.Arn
 Parameters:
   StackTagName:
     Type: String
