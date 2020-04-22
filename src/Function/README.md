@@ -6,7 +6,7 @@ We recommend updating this readme with your own function specific documentation.
 # Dependencies
 You can add dependencies on other files and packages.
 Within this directory, local dependencies can be added as individual files and
-package dependencies can be added to [build.gradle](https://docs.gradle.org/current/userguide/artifact_dependencies_tutorial.html).
+package dependencies can be added to [package.json](https://docs.npmjs.com/files/package.json).
 Package dependencies will be installed when the stack is deployed.
 
 # Stackery Documentation

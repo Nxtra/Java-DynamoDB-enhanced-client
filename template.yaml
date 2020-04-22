@@ -15,6 +15,9 @@ Resources:
               responses: {}
             get:
               responses: {}
+          /memory-cards/{uuid}:
+            get:
+              responses: {}
       FailOnWarnings: true
       CorsConfiguration:
         AllowOrigins:
@@ -48,6 +51,37 @@ Resources:
             ApiId: !Ref HttpApi
             PayloadFormatVersion: '2.0'
             TimeoutInMillis: 29000
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref MemoryCardsTable
+          TABLE_ARN: !GetAtt MemoryCardsTable.Arn
+  GetAllMemoryCardsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GetAllMemoryCardsFunction
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: Function
+      CodeUri: src/MemoryCardFunctions
+      Handler: io.theclouddeveloper.memorycards.MemoryCardsHandler::handleGetAllNewMemoryCardsRequest
+      Runtime: java11
+      MemorySize: 1024
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MemoryCardsTable
+      Events:
+        HttpApiGETmemorycards:
+          Type: HttpApi
+          Properties:
+            Path: /memory-cards
+            Method: GET
+            ApiId: !Ref HttpApi
+            PayloadFormatVersion: '2.0'
+            TimeoutInMillis: 29000
+      ReservedConcurrentExecutions: 1
       Environment:
         Variables:
           TABLE_NAME: !Ref MemoryCardsTable
@@ -97,23 +131,13 @@ Resources:
         - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
         - ResourceName: Function
       CodeUri: src/Function
-      Handler: Handler::handler
-      Runtime: java11
+      Handler: index.handler
+      Runtime: nodejs12.x
       MemorySize: 3008
       Timeout: 30
       Tracing: Active
       Policies:
         - AWSXrayWriteOnlyAccess
-      Events:
-        HttpApiGETmemorycards:
-          Type: HttpApi
-          Properties:
-            Path: /memory-cards
-            Method: GET
-            ApiId: !Ref HttpApi
-            PayloadFormatVersion: '2.0'
-            TimeoutInMillis: 29000
-      ReservedConcurrentExecutions: 1
 Parameters:
   StackTagName:
     Type: String
