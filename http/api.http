@@ -1,0 +1,23 @@
+### Update the URL by your own
+### Create new memory card
+POST {{BASE_URL}}
+Content-Type: application/json
+
+< ./memoryCard.json
+> {%
+    client.global.set("uuid", response.body.uuid);
+%}
+
+### Get one by uuid
+GET {{BASE_URL}}/{{uuid}}
+
+### Get all by author and category
+GET {{BASE_URL}}/{{author}}/{{category}}
+
+### Get all memory cards
+GET {{BASE_URL}}
+
+### Delete by uuid
+DELETE {{BASE_URL}}/{{uuid}}
+
+###
