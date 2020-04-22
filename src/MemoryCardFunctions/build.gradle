@@ -1,0 +1,60 @@
+import static org.gradle.api.JavaVersion.VERSION_11
+
+plugins {
+    id 'java'
+}
+
+group 'com.nickvanhoof'
+version '1.0.0-SNAPSHOT'
+
+sourceCompatibility = VERSION_11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //AWS
+    implementation platform('software.amazon.awssdk:bom:2.13.0')
+    implementation platform('com.amazonaws:aws-xray-recorder-sdk-bom:2.4.0')
+
+    implementation 'software.amazon.awssdk:lambda'
+    implementation 'software.amazon.awssdk:dynamodb'
+    implementation 'software.amazon.awssdk:dynamodb-enhanced:2.13.0'
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.0'
+    implementation 'com.amazonaws:aws-lambda-java-events:2.2.7'
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    //AWS Xray
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-core'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-apache-http'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-sql-postgres'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-sql-mysql'
+
+    implementation 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+
+    implementation 'org.slf4j:slf4j-api:1.8.0-beta2'
+    runtimeOnly 'org.jlib:jlib-awslambda-logback:1.0.0'
+
+    //tests
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
+    testImplementation 'org.projectlombok:lombok:1.18.12'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+}
+
+task buildZip(type: Zip) {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+}
+
+//build.finalizedBy buildZip
+
+build.dependsOn buildZip

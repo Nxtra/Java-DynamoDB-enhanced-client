@@ -1,0 +1,11 @@
+.stackery
+.aws-sam
+tmp/
+*/.idea/
+*/.gradle/
+tmp
+/build/
+/samconfig.toml
+/.idea/
+/src/MemoryCardFunctions/.gradle/
+/src/MemoryCardFunctions/build/
