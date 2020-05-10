@@ -3,11 +3,13 @@ package io.theclouddeveloper.memorycards.service;
 import io.theclouddeveloper.memorycards.model.MemoryCard;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.enhanced.dynamodb.*;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
+import javax.inject.Inject;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +24,10 @@ public class MemoryCardDynamoDBService {
     private DynamoDbEnhancedClient enhancedClient;
     private DynamoDbTable<MemoryCard> memoryCardTable;
 
+    @Inject
     public MemoryCardDynamoDBService() {
+
+
         dynamoDbClient = DynamoDbClient.builder()
                 .region(System.getenv("REGION") != null ? Region.of(System.getenv("REGION")) : Region.of("us-east-1"))
                 .build();

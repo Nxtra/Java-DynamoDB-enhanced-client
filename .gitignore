@@ -9,3 +9,7 @@ tmp
 /.idea/
 /src/MemoryCardFunctions/.gradle/
 /src/MemoryCardFunctions/build/
+/src/MemoryCardFunctions/build/
+/src/MemoryCardFunctions/out/
+/src/MemoryCardFunctions/src/main/generated/
+

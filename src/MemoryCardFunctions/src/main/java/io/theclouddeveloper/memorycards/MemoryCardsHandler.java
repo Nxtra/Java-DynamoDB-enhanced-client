@@ -5,11 +5,13 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2ProxyRequestEven
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2ProxyResponseEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.theclouddeveloper.memorycards.di.DaggerDIComponent;
 import io.theclouddeveloper.memorycards.model.MemoryCard;
 import io.theclouddeveloper.memorycards.model.ResponseMessageBody;
 import io.theclouddeveloper.memorycards.service.MemoryCardService;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,14 +19,17 @@ import java.util.Optional;
 @Slf4j
 public class MemoryCardsHandler {
 
-    private Gson gson;
-    private MemoryCardService memoryCardService;
+    @Inject
+    protected Gson gson;
+
+    @Inject
+    protected MemoryCardService memoryCardService;
+
     private static Map<String, String> standardResponseHeaders = Map.of("Content-Type", "application/json");
 
 
     public MemoryCardsHandler() {
-        gson = new GsonBuilder().create();
-        memoryCardService = new MemoryCardService();
+        DaggerDIComponent.builder().build().inject(this);
     }
 
     public APIGatewayV2ProxyResponseEvent handleCreateNewMemoryCardRequest(APIGatewayV2ProxyRequestEvent input, Context context) {

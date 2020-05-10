@@ -3,6 +3,7 @@ package io.theclouddeveloper.memorycards.service;
 import io.theclouddeveloper.memorycards.model.MemoryCard;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Inject;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -13,8 +14,9 @@ public class MemoryCardService {
 
     MemoryCardDynamoDBService memoryCardDynamoDBService;
 
-    public MemoryCardService() {
-        memoryCardDynamoDBService = new MemoryCardDynamoDBService();
+    @Inject
+    public MemoryCardService(MemoryCardDynamoDBService memoryCardDynamoDBService) {
+        this.memoryCardDynamoDBService = memoryCardDynamoDBService;
     }
 
     public MemoryCard processCreateNewMemoryCardRequest(MemoryCard newMemoryCard){
