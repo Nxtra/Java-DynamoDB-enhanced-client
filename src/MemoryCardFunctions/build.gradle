@@ -28,7 +28,9 @@ dependencies {
     //AWS Xray
     implementation 'com.amazonaws:aws-xray-recorder-sdk-core'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-v2'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-v2-instrumentor'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-apache-http'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-sql-postgres'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-sql-mysql'
